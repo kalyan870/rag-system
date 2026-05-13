@@ -2,7 +2,8 @@ import streamlit as st
 import httpx
 from pathlib import Path
 
-API_URL = st.secrets.get("API_URL", "http://localhost:8000")
+import os
+API_URL = os.environ.get("API_URL", "https://saragadamkalyan-rag-system-backend.hf.space")
 
 st.set_page_config(page_title="RAG System", page_icon="📄", layout="wide")
 
@@ -24,7 +25,7 @@ with st.sidebar:
     st.divider()
     st.header("📂 Upload Documents")
     uploaded_files = st.file_uploader(
-        "Choose files", type=["pdf", "docx", "txt", "md"], accept_multiple_files=True
+        "Choose files (PDF, DOCX, TXT, MD, PNG, JPG)", type=["pdf", "docx", "txt", "md", "png", "jpg", "jpeg"], accept_multiple_files=True
     )
 
     if uploaded_files:

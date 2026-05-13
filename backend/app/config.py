@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     cross_encoder_model: str = "cross-encoder/ms-marco-MiniLM-L6-v2"
 
+    hf_token: str = ""
+
     chunk_size: int = 512
     chunk_overlap: int = 64
 
@@ -26,6 +28,9 @@ class Settings(BaseSettings):
     anthropic_api_key: Optional[str] = None
     anthropic_model: str = "claude-3-haiku-20240307"
 
+    nvidia_api_key: Optional[str] = None
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
+
     llm_provider: str = "openai"
     llm_model: str = "gpt-4o-mini"
     llm_temperature: float = 0.0
@@ -37,7 +42,7 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
 
     max_file_size_mb: int = 50
-    allowed_extensions: str = ".pdf,.docx,.txt,.md"
+    allowed_extensions: str = ".pdf,.docx,.txt,.md,.png,.jpg,.jpeg"
 
     class Config:
         env_file = ".env"

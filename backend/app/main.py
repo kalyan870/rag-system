@@ -40,11 +40,17 @@ async def upload_document(file: UploadFile = File(...)):
     try:
         with open(temp_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
-
         text = extract_text(temp_path)
-        if not text.strip():
-            raise HTTPException(400, "No text could be extracted from the file.")
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        raise HTTPException(400, f"Could not read file: {e}")
 
+    if not text.strip():
+        os.remove(temp_path)
+        raise HTTPException(400, "No text could be extracted from the file. The file appears to contain images or binary data.")
+
+    try:
         doc_id = pipeline.ingest_document(file.filename, text)
         return {"doc_id": doc_id, "filename": file.filename, "message": "Document ingested successfully"}
     finally:
@@ -56,8 +62,11 @@ async def upload_document(file: UploadFile = File(...)):
 def query_documents(query: str = Form(...)):
     if not query.strip():
         raise HTTPException(400, "Query cannot be empty.")
-    result = pipeline.answer(query)
-    return result
+    try:
+        result = pipeline.answer(query)
+        return result
+    except Exception as e:
+        raise HTTPException(500, f"Query failed: {str(e)}")
 
 
 @app.get("/documents")

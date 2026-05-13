@@ -1,6 +1,7 @@
 from typing import List, Dict
 import numpy as np
 
+import os
 from app.config import settings
 from app.retrieval.embeddings import EmbeddingModel
 from app.retrieval.vector_store import VectorStore
@@ -12,6 +13,8 @@ from app.ingestion.document_store import DocumentStore
 
 class RetrievalPipeline:
     def __init__(self):
+        if settings.hf_token:
+            os.environ["HF_TOKEN"] = settings.hf_token
         self.embedder = EmbeddingModel(settings.embedding_model, settings.embedding_device)
         self.vector_store = VectorStore(settings.qdrant_path, settings.qdrant_collection, self.embedder.dim)
         self.bm25 = BM25Retriever()
@@ -84,6 +87,8 @@ class RetrievalPipeline:
             max_tokens=settings.llm_max_tokens,
             openai_api_key=settings.openai_api_key,
             anthropic_api_key=settings.anthropic_api_key,
+            nvidia_api_key=settings.nvidia_api_key,
+            nvidia_base_url=settings.nvidia_base_url,
         )
         result = generator.generate(query, contexts)
         result["contexts"] = contexts
