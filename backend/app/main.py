@@ -1,14 +1,16 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
-import shutil
 import os
 import uuid
+from pathlib import Path
+from typing import Annotated
+
+import aiofiles
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.retrieval.pipeline import RetrievalPipeline
-from app.ingestion.pdf_processor import extract_text
 from app.evaluation.metrics import evaluate_answer
+from app.ingestion.pdf_processor import extract_text
+from app.retrieval.pipeline import RetrievalPipeline
 
 app = FastAPI(title=settings.app_name, version="1.0.0")
 
@@ -31,20 +33,20 @@ def health():
 
 
 @app.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(file: Annotated[UploadFile, File()]):
     ext = Path(file.filename).suffix.lower()
     if ext not in settings.allowed_extensions:
         raise HTTPException(400, f"Unsupported file type: {ext}. Allowed: {settings.allowed_extensions}")
 
     temp_path = os.path.join(settings.upload_dir, f"{uuid.uuid4()}{ext}")
     try:
-        with open(temp_path, "wb") as f:
-            shutil.copyfileobj(file.file, f)
+        async with aiofiles.open(temp_path, "wb") as f:
+            await f.write(await file.read())
         text = extract_text(temp_path)
     except ValueError as e:
         raise HTTPException(400, str(e))
     except Exception as e:
-        raise HTTPException(400, f"Could not read file: {e}")
+        raise HTTPException(400, "Could not read file") from e
 
     if not text.strip():
         os.remove(temp_path)
@@ -66,7 +68,7 @@ def query_documents(query: str = Form(...)):
         result = pipeline.answer(query)
         return result
     except Exception as e:
-        raise HTTPException(500, f"Query failed: {str(e)}")
+        raise HTTPException(500, "Query failed. Please retry or contact support.") from e
 
 
 @app.get("/documents")

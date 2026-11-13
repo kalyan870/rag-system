@@ -1,7 +1,14 @@
+
 import numpy as np
-from typing import List, Dict, Optional
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 
 class VectorStore:
@@ -19,10 +26,10 @@ class VectorStore:
                 vectors_config=VectorParams(size=self.dim, distance=Distance.COSINE),
             )
 
-    def upsert(self, points: List[PointStruct]):
+    def upsert(self, points: list[PointStruct]):
         self.client.upsert(collection_name=self.collection, points=points)
 
-    def search(self, query_vector: np.ndarray, top_k: int = 20, doc_id: Optional[str] = None) -> List[Dict]:
+    def search(self, query_vector: np.ndarray, top_k: int = 20, doc_id: str | None = None) -> list[dict]:
         query_filter = None
         if doc_id:
             query_filter = Filter(

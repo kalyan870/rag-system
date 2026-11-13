@@ -1,8 +1,8 @@
+import os
+from pathlib import Path
+
 import pdfplumber
 from docx import Document
-from pathlib import Path
-from typing import List
-import os
 from huggingface_hub import InferenceClient
 
 
@@ -53,7 +53,7 @@ def extract_text_from_image(path: str) -> str:
     except ValueError:
         raise
     except Exception as e:
-        raise ValueError(f"Could not read image. Ensure the image contains clear, readable text. Error: {e}")
+        raise ValueError("Could not read image. Ensure the image contains clear, readable text.") from e
 
 
 def extract_text(path: str) -> str:
