@@ -1,14 +1,12 @@
-from typing import List, Dict
-import numpy as np
-
 import os
+
 from app.config import settings
-from app.retrieval.embeddings import EmbeddingModel
-from app.retrieval.vector_store import VectorStore
+from app.ingestion.document_store import DocumentStore
 from app.retrieval.bm25_retriever import BM25Retriever
+from app.retrieval.embeddings import EmbeddingModel
 from app.retrieval.hybrid_search import reciprocal_rank_fusion
 from app.retrieval.reranker import Reranker
-from app.ingestion.document_store import DocumentStore
+from app.retrieval.vector_store import VectorStore
 
 
 class RetrievalPipeline:
@@ -58,7 +56,7 @@ class RetrievalPipeline:
 
         return doc_id
 
-    def search(self, query: str, top_k: int = None) -> List[Dict]:
+    def search(self, query: str, top_k: int | None = None) -> list[dict]:
         if top_k is None:
             top_k = settings.top_k_retrieval
 
@@ -76,7 +74,7 @@ class RetrievalPipeline:
         reranked = self.reranker.rerank(query, fused, top_k=settings.top_k_rerank)
         return reranked
 
-    def answer(self, query: str) -> Dict:
+    def answer(self, query: str) -> dict:
         contexts = self.search(query)
         from app.generation.llm_generator import LLMGenerator
 
@@ -94,7 +92,7 @@ class RetrievalPipeline:
         result["contexts"] = contexts
         return result
 
-    def get_documents(self) -> List[Dict]:
+    def get_documents(self) -> list[dict]:
         return self.doc_store.get_all_documents()
 
     def remove_document(self, doc_id: str) -> bool:

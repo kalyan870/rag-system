@@ -1,8 +1,8 @@
-from typing import List, Dict
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def chunk_text(text: str, chunk_size: int = 512, chunk_overlap: int = 64) -> List[Dict]:
+def chunk_text(text: str, chunk_size: int = 512, chunk_overlap: int = 64) -> list[dict]:
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,

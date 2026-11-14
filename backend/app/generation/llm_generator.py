@@ -1,7 +1,7 @@
-from typing import List, Dict, Optional
-from openai import OpenAI
-import anthropic
 import os
+
+import anthropic
+from openai import OpenAI
 
 
 class LLMGenerator:
@@ -11,10 +11,10 @@ class LLMGenerator:
         model: str = "gpt-4o-mini",
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        openai_api_key: Optional[str] = None,
-        anthropic_api_key: Optional[str] = None,
-        nvidia_api_key: Optional[str] = None,
-        nvidia_base_url: Optional[str] = None,
+        openai_api_key: str | None = None,
+        anthropic_api_key: str | None = None,
+        nvidia_api_key: str | None = None,
+        nvidia_base_url: str | None = None,
     ):
         self.provider = provider
         self.model = model
@@ -38,7 +38,7 @@ class LLMGenerator:
             if api_key:
                 self.openai_client = OpenAI(api_key=api_key, base_url=base_url)
 
-    def _make_prompt(self, query: str, contexts: List[Dict]) -> str:
+    def _make_prompt(self, query: str, contexts: list[dict]) -> str:
         context_text = "\n\n".join(
             f"[Document {i+1}] (Source: {c['filename']}):\n{c['text']}"
             for i, c in enumerate(contexts)
@@ -55,7 +55,7 @@ For every claim you make, cite the source document number in brackets like [1], 
 
 **Answer:**"""
 
-    def generate(self, query: str, contexts: List[Dict]) -> Dict:
+    def generate(self, query: str, contexts: list[dict]) -> dict:
         if not contexts:
             return {
                 "answer": "No relevant documents found to answer the question.",
@@ -83,7 +83,7 @@ For every claim you make, cite the source document number in brackets like [1], 
                 answer = response.content[0].text
             else:
                 answer = self._fallback_generate(query, contexts)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - provider SDKs expose varied errors; fall back to retrieved context.
             err = str(e)
             if "does not support image" in err.lower():
                 answer = "The uploaded file appears to contain image data. Please upload text-based documents (PDF, DOCX, TXT, MD) — images and screenshots are not supported."
@@ -99,7 +99,7 @@ For every claim you make, cite the source document number in brackets like [1], 
 
         return {"answer": answer, "citations": citations}
 
-    def _fallback_generate(self, query: str, contexts: List[Dict]) -> str:
+    def _fallback_generate(self, query: str, contexts: list[dict]) -> str:
         context_text = "\n\n".join(
             f"From {c['filename']}: {c['text'][:300]}"
             for c in contexts[:3]
@@ -107,7 +107,7 @@ For every claim you make, cite the source document number in brackets like [1], 
         lines = [
             f"Based on the retrieved documents, here is the answer to: {query}",
             "",
-            f"Context used:",
+            "Context used:",
             context_text,
             "",
             "Note: LLM API key not configured. This is a fallback response showing the retrieved context.",

@@ -1,13 +1,12 @@
-from typing import List, Dict
-import numpy as np
+
 
 
 def reciprocal_rank_fusion(
-    vector_results: List[Dict],
-    bm25_results: List[Dict],
+    vector_results: list[dict],
+    bm25_results: list[dict],
     alpha: float = 0.5,
     top_k: int = 20,
-) -> List[Dict]:
+) -> list[dict]:
     seen = {}
     k = 60
 

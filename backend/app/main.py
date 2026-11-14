@@ -1,14 +1,16 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
-import shutil
 import os
 import uuid
+from pathlib import Path
+from typing import Annotated
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.retrieval.pipeline import RetrievalPipeline
-from app.ingestion.pdf_processor import extract_text
 from app.evaluation.metrics import evaluate_answer
+from app.ingestion.pdf_processor import extract_text
+from app.retrieval.pipeline import RetrievalPipeline
+from app.upload_utils import save_upload, supported_extension
 
 app = FastAPI(title=settings.app_name, version="1.0.0")
 
@@ -31,28 +33,25 @@ def health():
 
 
 @app.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
-    ext = Path(file.filename).suffix.lower()
-    if ext not in settings.allowed_extensions:
-        raise HTTPException(400, f"Unsupported file type: {ext}. Allowed: {settings.allowed_extensions}")
+async def upload_document(file: Annotated[UploadFile, File()]):
+    filename = file.filename or ""
+    ext = supported_extension(filename, settings.allowed_extensions)
 
+    max_bytes = settings.max_file_size_mb * 1024 * 1024
     temp_path = os.path.join(settings.upload_dir, f"{uuid.uuid4()}{ext}")
     try:
-        with open(temp_path, "wb") as f:
-            shutil.copyfileobj(file.file, f)
+        save_upload(file.file, temp_path, max_bytes)
         text = extract_text(temp_path)
+        if not text.strip():
+            raise HTTPException(400, "No text could be extracted from the file. The file appears to contain images or binary data.")
+        doc_id = pipeline.ingest_document(filename, text)
+        return {"doc_id": doc_id, "filename": filename, "message": "Document ingested successfully"}
+    except HTTPException:
+        raise
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(400, str(e)) from e
     except Exception as e:
-        raise HTTPException(400, f"Could not read file: {e}")
-
-    if not text.strip():
-        os.remove(temp_path)
-        raise HTTPException(400, "No text could be extracted from the file. The file appears to contain images or binary data.")
-
-    try:
-        doc_id = pipeline.ingest_document(file.filename, text)
-        return {"doc_id": doc_id, "filename": file.filename, "message": "Document ingested successfully"}
+        raise HTTPException(400, "Could not read file.") from e
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
@@ -66,7 +65,7 @@ def query_documents(query: str = Form(...)):
         result = pipeline.answer(query)
         return result
     except Exception as e:
-        raise HTTPException(500, f"Query failed: {str(e)}")
+        raise HTTPException(500, "Query failed. Please retry or contact support.") from e
 
 
 @app.get("/documents")

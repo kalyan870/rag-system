@@ -1,5 +1,5 @@
+
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -22,13 +22,13 @@ class Settings(BaseSettings):
 
     hybrid_search_alpha: float = 0.5
 
-    openai_api_key: Optional[str] = None
+    openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
 
-    anthropic_api_key: Optional[str] = None
+    anthropic_api_key: str | None = None
     anthropic_model: str = "claude-3-haiku-20240307"
 
-    nvidia_api_key: Optional[str] = None
+    nvidia_api_key: str | None = None
     nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
 
     llm_provider: str = "openai"

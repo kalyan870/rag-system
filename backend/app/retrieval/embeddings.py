@@ -1,6 +1,6 @@
-import numpy as np
-from typing import List
 import os
+
+import numpy as np
 from huggingface_hub import InferenceClient
 
 
@@ -11,7 +11,7 @@ class EmbeddingModel:
         token = os.getenv("HF_TOKEN")
         self.client = InferenceClient(token=token) if token else InferenceClient()
 
-    def encode(self, texts: List[str]) -> np.ndarray:
+    def encode(self, texts: list[str]) -> np.ndarray:
         result = self.client.feature_extraction(texts, model=self.model_name)
         if isinstance(result, list):
             result = np.array(result, dtype=np.float32)
