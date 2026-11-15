@@ -13,10 +13,15 @@ from app.retrieval.pipeline import RetrievalPipeline
 from app.upload_utils import save_upload, supported_extension
 
 app = FastAPI(title=settings.app_name, version="1.0.0")
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "").split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
