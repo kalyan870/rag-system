@@ -2,6 +2,8 @@
 
 Enterprise-grade document Q&A system with hybrid search, reranking, and evaluation pipelines.
 
+![RAG system architecture and process flow](<rag for Production RAG Application.png>)
+
 ## Architecture
 
 ```
