@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+<title id="title">RAG System architecture</title>
+<desc id="desc">Source-verified architecture from Streamlit and FastAPI through ingestion, hybrid retrieval, and answer generation, including current local persistence limits.</desc>
+<defs>
+  <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#0a1220"/><stop offset="1" stop-color="#111d30"/></linearGradient>
+  <linearGradient id="cyan" x2="1"><stop stop-color="#16b8cf"/><stop offset="1" stop-color="#48d9df"/></linearGradient>
+  <linearGradient id="amber" x2="1"><stop stop-color="#e89a37"/><stop offset="1" stop-color="#ffd16d"/></linearGradient>
+  <marker id="arrowC" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#4bd1df"/></marker>
+  <marker id="arrowA" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#ffc15a"/></marker>
+  <style>
+    text{font-family:Inter,"Segoe UI",Arial,sans-serif;fill:#edf4ff}.muted{fill:#afbed1}.eyebrow{font-size:18px;font-weight:700;letter-spacing:3px}.title{font-size:42px;font-weight:750}.subtitle{font-size:22px}.section{font-size:20px;font-weight:750;letter-spacing:2px}.cardTitle{font-size:23px;font-weight:700}.body{font-size:19px}.small{font-size:18px}.card{fill:#15243a;stroke:#334761;stroke-width:2}.ingest{stroke:#b87c34}.persist{fill:#102a35;stroke:#238ea0}.retrieve{stroke:#328ba2}.output{fill:#102a35;stroke:#238ea0}.warn{fill:#241f26;stroke:#bb8134;stroke-width:2}.lineC{stroke:#4bd1df;stroke-width:4;fill:none;marker-end:url(#arrowC)}.lineA{stroke:#ffc15a;stroke-width:4;fill:none;marker-end:url(#arrowA)}
+  </style>
+</defs>
+<rect width="1600" height="1100" rx="30" fill="url(#bg)"/>
+<circle cx="1460" cy="120" r="190" fill="#24516b" opacity=".14"/>
+<text x="64" y="68" class="eyebrow muted">RAG SYSTEM · IMPLEMENTED ARCHITECTURE</text>
+<text x="64" y="130" class="title">From document upload to cited answer</text>
+<text x="64" y="170" class="subtitle muted">Repository-backed component map · source boundaries and persistence are shown as implemented</text>
+
+<rect x="64" y="205" width="1472" height="88" rx="20" fill="#102632" stroke="#228ca0" stroke-width="2"/>
+<text x="96" y="260" class="cardTitle">Streamlit client</text>
+<path d="M310 249H420" class="lineC"/>
+<text x="450" y="260" class="cardTitle">FastAPI service</text>
+<text x="730" y="250" class="body muted">HTTP routes</text>
+<text x="730" y="278" class="small muted">upload · query · documents · evaluate · health</text>
+
+<text x="64" y="345" class="section" fill="#ffd16d">01 · DOCUMENT INGESTION</text>
+<g>
+ <rect x="64" y="375" width="260" height="172" rx="18" class="card ingest"/>
+ <text x="88" y="420" class="cardTitle">Validate upload</text><text x="88" y="462" class="body muted">Type and size checks</text><text x="88" y="494" class="body muted">Temporary source file</text>
+ <rect x="354" y="375" width="260" height="172" rx="18" class="card ingest"/>
+ <text x="378" y="420" class="cardTitle">Extract text</text><text x="378" y="462" class="body muted">PDF · DOCX · TXT · MD</text><text x="378" y="494" class="body muted">Images use HF OCR</text>
+ <rect x="644" y="375" width="260" height="172" rx="18" class="card ingest"/>
+ <text x="668" y="420" class="cardTitle">Chunk and embed</text><text x="668" y="462" class="body muted">Recursive chunks</text><text x="668" y="494" class="body muted">HF embedding API</text>
+ <rect x="934" y="375" width="260" height="172" rx="18" class="persist" stroke-width="2"/>
+ <text x="958" y="420" class="cardTitle">Persist content</text><text x="958" y="462" class="body muted">Local Qdrant vectors</text><text x="958" y="494" class="body muted">JSON metadata and chunks</text>
+ <rect x="1224" y="375" width="312" height="172" rx="18" class="card ingest"/>
+ <text x="1248" y="420" class="cardTitle">Remove source</text><text x="1248" y="462" class="body muted">Uploaded file deleted</text><text x="1248" y="494" class="body muted">after extraction</text>
+ <path d="M324 461H344M614 461H634M904 461H924M1194 461H1214" class="lineA"/>
+</g>
+
+<text x="64" y="615" class="section" fill="#59d3e0">02 · QUESTION RETRIEVAL AND ANSWER</text>
+<g>
+ <rect x="64" y="645" width="260" height="172" rx="18" class="card retrieve"/>
+ <text x="88" y="690" class="cardTitle">Question vector</text><text x="88" y="732" class="body muted">Hugging Face model</text><text x="88" y="764" class="body muted">Query text also enters BM25</text>
+ <rect x="354" y="645" width="260" height="172" rx="18" class="card retrieve"/>
+ <text x="378" y="690" class="cardTitle">Parallel retrieval</text><text x="378" y="732" class="body muted">Qdrant vector search</text><text x="378" y="764" class="body muted">BM25 keyword search</text>
+ <rect x="644" y="645" width="260" height="172" rx="18" class="card retrieve"/>
+ <text x="668" y="690" class="cardTitle">Fuse rankings</text><text x="668" y="732" class="body muted">Reciprocal-rank fusion</text><text x="668" y="764" class="body muted">Select candidate context</text>
+ <rect x="934" y="645" width="260" height="172" rx="18" class="card retrieve"/>
+ <text x="958" y="690" class="cardTitle">Rerank results</text><text x="958" y="732" class="body muted">Optional cross-encoder</text><text x="958" y="764" class="body muted">Local or HF API path</text>
+ <rect x="1224" y="645" width="312" height="172" rx="18" class="output" stroke-width="2"/>
+ <text x="1248" y="690" class="cardTitle">Answer with citations</text><text x="1248" y="732" class="body muted">Configured LLM provider</text><text x="1248" y="764" class="body muted">Retrieved source snippets</text>
+ <path d="M324 731H344M614 731H634M904 731H924M1194 731H1214" class="lineC"/>
+</g>
+
+<rect x="64" y="865" width="1472" height="150" rx="20" class="warn"/>
+<text x="96" y="915" class="cardTitle" fill="#ffd16d">Deployment and security boundary</text>
+<text x="96" y="956" class="body muted">Qdrant and JSON data live on local disk. Ephemeral hosts may lose them on restart; uploads are shared.</text>
+<text x="96" y="988" class="body muted">No user accounts or tenant isolation are implemented. Use private deployment for sensitive documents.</text>
+<text x="64" y="1060" class="small muted">External calls: Hugging Face inference · configured OpenAI, Anthropic, or NVIDIA-compatible API · browser CORS allowlist</text>
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+<title id="title">RAG document and query flow</title>
+<desc id="desc">Two-stage flow: a document is extracted, chunked, embedded, and indexed; questions use hybrid retrieval and return source-backed answers.</desc>
+<defs>
+ <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#0a1220"/><stop offset="1" stop-color="#111d30"/></linearGradient>
+ <linearGradient id="gold" x2="1"><stop stop-color="#e89a37"/><stop offset="1" stop-color="#ffd16d"/></linearGradient>
+ <linearGradient id="blue" x2="1"><stop stop-color="#16b8cf"/><stop offset="1" stop-color="#48d9df"/></linearGradient>
+ <marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#91a9c6"/></marker>
+ <style>
+ text{font-family:Inter,"Segoe UI",Arial,sans-serif;fill:#edf4ff}.muted{fill:#afbed1}.eyebrow{font-size:18px;font-weight:700;letter-spacing:3px}.title{font-size:42px;font-weight:750}.subtitle{font-size:22px}.stage{font-size:21px;font-weight:750;letter-spacing:2px}.cardTitle{font-size:24px;font-weight:700}.body{font-size:20px}.note{font-size:19px}.card{fill:#15243a;stroke-width:2}.ing{stroke:#b87c34}.ret{stroke:#328ba2}.arrow{stroke:#91a9c6;stroke-width:4;marker-end:url(#a)}
+ </style>
+</defs>
+<rect width="1600" height="980" rx="30" fill="url(#bg)"/>
+<circle cx="1460" cy="100" r="190" fill="#24516b" opacity=".14"/>
+<text x="64" y="68" class="eyebrow muted">RAG SYSTEM · REQUEST LIFECYCLE</text>
+<text x="64" y="130" class="title">Ingest once. Ask questions with evidence.</text>
+<text x="64" y="170" class="subtitle muted">Each answer is grounded in retrieved document chunks and includes source snippets.</text>
+
+<text x="64" y="246" class="stage" fill="#ffd16d">01 · DOCUMENT INGESTION</text>
+<g>
+ <rect x="64" y="275" width="330" height="178" rx="20" class="card ing"/>
+ <text x="94" y="322" class="cardTitle">Upload and validate</text><text x="94" y="366" class="body muted">Check supported file types</text><text x="94" y="400" class="body muted">and configured size limit</text>
+ <rect x="444" y="275" width="330" height="178" rx="20" class="card ing"/>
+ <text x="474" y="322" class="cardTitle">Extract and split</text><text x="474" y="366" class="body muted">Read document text; OCR</text><text x="474" y="400" class="body muted">is used for image uploads</text>
+ <rect x="824" y="275" width="330" height="178" rx="20" class="card ing"/>
+ <text x="854" y="322" class="cardTitle">Create embeddings</text><text x="854" y="366" class="body muted">Send chunks to the configured</text><text x="854" y="400" class="body muted">Hugging Face embedding model</text>
+ <rect x="1204" y="275" width="332" height="178" rx="20" class="card" fill="#102a35" stroke="#238ea0"/>
+ <text x="1234" y="322" class="cardTitle">Index and clean up</text><text x="1234" y="366" class="body muted">Store vectors and metadata</text><text x="1234" y="400" class="body muted">Remove the temporary upload</text>
+ <path d="M394 364H434M774 364H814M1154 364H1194" class="arrow" fill="none"/>
+</g>
+
+<text x="64" y="535" class="stage" fill="#59d3e0">02 · QUESTION AND ANSWER</text>
+<g>
+ <rect x="64" y="565" width="330" height="178" rx="20" class="card ret"/>
+ <text x="94" y="612" class="cardTitle">Ask a question</text><text x="94" y="656" class="body muted">Question is embedded and</text><text x="94" y="690" class="body muted">searched as keywords</text>
+ <rect x="444" y="565" width="330" height="178" rx="20" class="card ret"/>
+ <text x="474" y="612" class="cardTitle">Retrieve in parallel</text><text x="474" y="656" class="body muted">Vector similarity and BM25</text><text x="474" y="690" class="body muted">find relevant chunks</text>
+ <rect x="824" y="565" width="330" height="178" rx="20" class="card ret"/>
+ <text x="854" y="612" class="cardTitle">Fuse and rerank</text><text x="854" y="656" class="body muted">Combine rankings; optionally</text><text x="854" y="690" class="body muted">rerank the strongest matches</text>
+ <rect x="1204" y="565" width="332" height="178" rx="20" class="card" fill="#102a35" stroke="#238ea0"/>
+ <text x="1234" y="612" class="cardTitle">Generate with sources</text><text x="1234" y="656" class="body muted">Configured language model</text><text x="1234" y="690" class="body muted">returns answer and citations</text>
+ <path d="M394 654H434M774 654H814M1154 654H1194" class="arrow" fill="none"/>
+</g>
+
+<rect x="64" y="805" width="1472" height="106" rx="20" fill="#241f26" stroke="#bb8134" stroke-width="2"/>
+<text x="94" y="850" class="cardTitle" fill="#ffd16d">Current deployment caveat</text>
+<text x="94" y="884" class="note muted">The index and metadata are local files; ephemeral hosts can lose them on restart. No account or per-user access control is implemented.</text>
+</svg>
