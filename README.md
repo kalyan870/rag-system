@@ -2,6 +2,8 @@
 
 Enterprise-grade document Q&A system with hybrid search, reranking, and evaluation pipelines.
 
+![RAG system architecture and process flow](<rag for Production RAG Application.png>)
+
 ## Architecture
 
 ```
@@ -39,6 +41,8 @@ cd frontend
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+For a browser client hosted on a different origin, set `CORS_ORIGINS` to a comma-separated list of exact trusted origins (for example, `https://portfolio.example`). It is empty by default; do not use `*` with credentialed requests.
 
 ## API Endpoints
 
